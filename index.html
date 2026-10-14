@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTATO RUMB - UPP TABAJARAS</title>
+    <link rel="shortcut icon" type="imagex/png" href="../IMAGENS/caveira.ico">
+
+    <style>
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background-color: #f0f0f0; 
+            margin: 0; 
+            font-family: Arial, sans-serif; 
+            gap: 20px; 
+            padding-bottom: 80px; 
+            /* ADICIONADO: Espaço para o cabeçalho fixo não cobrir o conteúdo */
+            padding-top: 120px; 
+        }
+
+        header { 
+            /* ADICIONADO: Fixar no topo */
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-sizing: border-box; /* Garante que o padding não estoure a largura */
+            
+            background-color: #00a4e4; 
+            color: white; 
+            padding: 1rem; 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+        }
+        
+        .card { width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: #fff; text-align: center; border: 1px solid #ddd; margin-bottom: 10px; }
+        .card-plantao { border: 3px solid #00205b; background-color: #e3f2fd; position: relative; margin-top: 20px; }
+        .badge { background: #d32f2f; color: white; padding: 5px 15px; border-radius: 20px; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-weight: bold; font-size: 12px; }
+
+        .profile-pic { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; overflow: hidden; border: 3px solid #00205b; background: #eee; }
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+        
+        h2 { margin: 0; color: #333; }
+        strong { color: #00205b; }
+        .sap__cor__verde { color: #075e54; font-weight: bold; text-decoration: none; }
+        
+        .social-links { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .apresentacao__links__link { display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid #ccc; border-radius: 8px; padding: 12px; text-decoration: none; color: #333; font-weight: 600; }
+        .apresentacao__links__link img { width: 25px; }
+
+        .busca-container { background: #00205b; color: white; width: 400px; padding: 20px; border-radius: 15px; text-align: center; box-sizing: border-box; margin-top: 30px; }
+        .busca-container input { padding: 10px; width: 85%; border-radius: 5px; border: none; margin: 10px 0; font-size: 16px; text-align: center; }
+        .btn-busca { background: #00a4e4; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 85%; transition: 0.3s; }
+        #resultado-busca { margin-top: 15px; padding: 10px; border-radius: 8px; background: rgba(255,255,255,0.1); min-height: 40px; display: none; }
+
+        /* --- ANIMAÇÕES E HOVER --- */
+        .caveira { 
+            width: 60px; 
+            transition: transform 0.2s;
+        }
+        
+        .caveira:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 5px #ffd700);
+        }
+
+        .whats { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        
+        .whats img {
+            transition: transform 0.2s;
+        }
+
+        .whats img:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 5px #ffd700);
+        }
+    </style>
+
+    <script>
+        document.oncontextmenu = () => false;
+        document.onkeydown = (e) => {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
+        };
+    </script>
+</head>
+<body>
+
+    <header>
+        <a href="../dashboard.html"><img src="img/caveira-armada2.png" class="caveira" title="Voltar ao Painel"></a>
+        <strong style="color: white;">CONTATOS da RUMB - 3ª CIA - UPP TABAJARAS</strong>
+    </header>
+
+    <div id="container-plantao"></div>
+
+    <hr style="width: 80%; border: 0.5px solid #ccc; margin: 20px 0;">
+    <p style="color: #666; font-weight: bold;">TODOS OS CONTATOS</p>
+
+    <div id="lista-geral"></div>
+
+    <div class="busca-container">
+        <h3 style="margin-top: 0;">Previsão de Escala</h3>
+        <p style="font-size: 14px; opacity: 0.8;">Veja quem estará de serviço futuramente:</p>
+        <input type="datetime-local" id="data-consulta">
+        <button class="btn-busca" onclick="consultarEscala()">Verificar Quartilheiro</button>
+        <div id="resultado-busca"></div>
+    </div>
+
+    <div class="whats">
+        <a href="https://wa.me/5521964827877"><img src="img/whatsapp.png" width="70px" title="Falar com a RUMB"></a>
+    </div>
+
+    <script>
+        const db = {
+            sekiguchi: { posto: "3º SGT PM", nome: "Lima", cel: "(21) 96438-2136", wa: "5521964382136", foto: "img/lima.png" },
+            george: { posto: "2º SGT PM", nome: "George", cel: "(21) 96421-5356", wa: "5521964215356", foto: "img/85538.jpg" },
+            simoes: { posto: "3º SGT PM", nome: "R. Simões", cel: "(21) 98253-9175", wa: "5521982539175", foto: "img/rodrigo.png" },
+            bruno: { posto: "2º SGT PM", nome: "Bruno Lima", cel: "(21) 97005-9743", wa: "5521970059743", foto: "img/85523.jpg" }
+        };
+
+        // SEQUÊNCIA COMPLETA (Ciclo de 4 turnos de 24 horas - Escala 24x72)
+        const sequenciaEscala = [
+            db.sekiguchi, // 0: 18/07
+            db.george,    // 1: 19/07
+            db.simoes,    // 2: 20/07
+            db.bruno      // 3: 21/07
+        ];
+
+        // Referência Inicial: 18/07/2026 às 08:00 (Início do Sekiguchi - Ajuste a hora se necessário)
+        const dataReferencia = new Date(2026, 6, 18, 8, 0, 0); // Mês 6 = Julho
+
+        function criarCard(p, isPlantao = false) {
+            return `
+                <div class="card ${isPlantao ? 'card-plantao' : ''}">
+                    ${isPlantao ? '<div class="badge">EM SERVIÇO AGORA</div>' : ''}
+                    <div class="profile-pic"><img src="${p.foto}"></div>
+                    <h2>${p.posto} <strong>${p.nome}</strong></h2>
+                    <div class="contact-info">
+                        <p>Cel.: ${p.cel}</p>
+                        ${p.wa ? `<a href="https://wa.me/${p.wa}" class="sap__cor__verde">Chamar no WhatsApp</a>` : ''}
+                    </div>
+                    <div class="social-links">
+                        <a class="apresentacao__links__link" href="mailto:rumb2upp19bpm@outlook.com"><img src="img/carta.png">E-mail RUMB</a>
+                    </div>
+                </div>`;
+        }
+
+        function obterPlantonista(dataAlvo) {
+            const diffMs = dataAlvo - dataReferencia;
+            // Modificado para blocos de 24 horas
+            const blocos24h = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+            
+            // Lógica circular para 4 turnos
+            const n = sequenciaEscala.length;
+            const index = ((blocos24h % n) + n) % n;
+            return sequenciaEscala[index];
+        }
+
+        function atualizarPagina() {
+            const agora = new Date();
+            const plantonista = obterPlantonista(agora);
+            document.getElementById('container-plantao').innerHTML = criarCard(plantonista, true);
+            
+            // Atualizada a lista fixa para os novos 4 integrantes
+            const listaFixa = [db.sekiguchi, db.george, db.simoes, db.bruno];
+            document.getElementById('lista-geral').innerHTML = listaFixa.map(p => criarCard(p)).join('');
+        }
+
+        function consultarEscala() {
+            const inputData = document.getElementById('data-consulta').value;
+            const display = document.getElementById('resultado-busca');
+            
+            if (!inputData) {
+                alert("Escolha uma data e horário!");
+                return;
+            }
+
+            const dataAlvo = new Date(inputData);
+            const policial = obterPlantonista(dataAlvo);
+
+            display.style.display = "block";
+            display.innerHTML = `
+                <p style="margin: 0; font-size: 14px;">Plantonista previsto:</p>
+                <div style="font-weight:bold; font-size:18px; color: #00a4e4; margin-top: 5px;">
+                    ${policial.posto} ${policial.nome}
+                </div>
+            `;
+        }
+
+        atualizarPagina();
+        setInterval(atualizarPagina, 60000); 
+    </script>
+</body>
+</html>
